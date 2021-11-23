@@ -22,3 +22,18 @@
         relevant-keys (clojure.set/intersection fn-map-keys d-map-keys)
         relevant-fn-map (select-keys fn-map relevant-keys)]
     (merge-with #(%1 %2) relevant-fn-map d-map)))
+
+;; pass-value-through
+(defn use-i
+  ([f]
+   (use-i f 0))
+  ([f n]
+   (fn [arg-vec]
+     (update arg-vec n f))))
+
+
+;; transduce first
+(def reduce-first
+  "reducing function that returns the first item (useful on tranducers)"
+  (completing (fn [_ x]
+                (reduced x))))
