@@ -37,3 +37,19 @@
   "reducing function that returns the first item (useful on tranducers)"
   (completing (fn [_ x]
                 (reduced x))))
+
+
+(defn get-adjacent-coords
+  [[x y]]
+  ;; (map #(u/evolve % coord) adj-fns)
+  (list [x (dec y)]
+        [(inc x) y]
+        [x (inc y)]
+        [(dec x) y]))
+
+
+(defn coll->occurrences-map
+  [coll]
+  (reduce (fn [acc x]
+            (update acc x (fnil inc 0)))
+          {} coll))

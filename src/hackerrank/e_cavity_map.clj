@@ -11,18 +11,11 @@
 ;;     [0 identity, 1 inc] ;; d
 ;;     [0 dec, 1 identity])) ;; l
 
-(defn get-adjacent-coords
-  [[x y]]
-  ;; (map #(u/evolve % coord) adj-fns)
-  (list [x (dec y)]
-        [(inc x) y]
-        [x (inc y)]
-        [(dec x) y]))
 
 (defn cavity?
   [grid coord]
   (let [depth (grid coord)
-        adjs (get-adjacent-coords coord)
+        adjs (u/get-adjacent-coords coord)
         adj-depths (map grid adjs)]
     (every? #(and (number? %)
                   (> depth %)) adj-depths)))
