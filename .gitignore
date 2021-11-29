@@ -13,3 +13,4 @@ pom.xml.asc
 .hg/
 .calva/
 debug.log
+*_input.*
