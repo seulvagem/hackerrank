@@ -33,7 +33,7 @@
 
 
 ;; transduce first
-(def reduce-first
+(def rf-first
   "reducing function that returns the first item (useful on tranducers)"
   (completing (fn [_ x]
                 (reduced x))))
