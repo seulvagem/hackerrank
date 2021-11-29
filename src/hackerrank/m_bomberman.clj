@@ -6,29 +6,6 @@
   [grid coord]
   (get-in grid (reverse coord)))
 
-;; a cada ação salvar quais locais apagar (set?), depois limpar todos juntos
-(defn explode
-  [grid coords]
-  (let [xf (comp (map (juxt identity #(get-in-grid grid %)))
-                 (filter #(= (second %) 1))
-                 (map first)
-                 (mapcat #(conj (u/get-adjacent-coords %) %)))]
-    (into #{} xf coords)))
-
-(defn sec
-  [grid]
-  (let [coords (for [y (range (count grid))
-                     x (range (count (first grid)))]
-                 [x y])
-        coords-to-clear (explode grid coords)]
-    (reduce (fn [grid coord]
-              (update-in grid (reverse coord)
-                         (fn [val]
-                           (if (coords-to-clear coord)
-                             0
-                             (if (pos? val)
-                               (dec val)
-                               val))))) grid coords)))
 
 (defn bomberman-turn?
   [i]
@@ -55,10 +32,31 @@
     (put-bombs grid)
     grid))
 
-(defn full-sec
-  [i grid]
-  (let [p (comp sec (partial bomberman-do-its-thing i))]
-    (p grid)))
+;; a cada ação salvar quais locais apagar (set?), depois limpar todos juntos
+(defn explode
+  [grid coords]
+  (let [xf (comp (map (juxt identity #(get-in-grid grid %)))
+                 (filter #(= (second %) 1))
+                 (map first)
+                 (mapcat #(conj (u/get-adjacent-coords %) %)))]
+    (into #{} xf coords)))
+
+(defn sec
+  [grid]
+  (let [coords (for [y (range (count grid))
+                     x (range (count (first grid)))]
+                 [x y])
+        coords-to-clear (explode grid coords)]
+    (reduce (fn [grid coord]
+              (update-in grid (reverse coord)
+                         (fn [val]
+                           (if (coords-to-clear coord)
+                             0
+                             (if (pos? val)
+                               (dec val)
+                               val))))) grid coords)))
+(def full-sec
+  (comp sec bomberman-do-its-thing))
 
 (defn bomberman
   [n grid]
@@ -93,3 +91,14 @@
 (defn bomberMan
   [n input]
   (grid->output (bomberman (dec n) (input->grid input))))
+
+(def input ["......." 
+            "...O..." 
+            "....O.." 
+            "......." 
+            "OO....." 
+            "OO....."])
+
+(defn -main
+  []
+  (bomberMan 3 input))
