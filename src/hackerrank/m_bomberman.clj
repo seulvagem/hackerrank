@@ -21,7 +21,7 @@
 
 (defn put-bombs
   [grid]
-  (mapv #(mapv (fn [val] 
+  (mapv #(mapv (fn [val]
                  (if (nothing? val)
                    bomb
                    val)) %) grid))
@@ -61,10 +61,10 @@
 (defn bomberman
   [n grid]
   (reduce (fn [grid i]
-               (let [n-grid (full-sec i grid)]
-                 (if (= n i)
-                   (reduced n-grid)
-                   n-grid))) grid (range n)))
+            (let [n-grid (full-sec i grid)]
+              (if (= n i)
+                (reduced n-grid)
+                n-grid))) grid (range n)))
 
 (defn char->val
   [c]
@@ -89,16 +89,52 @@
 
 
 (defn bomberMan
+  [a input]
+  (let [b (dec a)
+        c (if (< b 7)
+            b
+            (+ 2 (rem b 4)))]
+    (grid->output (bomberman c (input->grid input)))))
+
+(defn bomberMano
   [n input]
   (grid->output (bomberman (dec n) (input->grid input))))
 
-(def input ["......." 
-            "...O..." 
-            "....O.." 
-            "......." 
-            "OO....." 
+(def input ["......."
+            "...O..."
+            "....O.."
+            "......."
+            "OO....."
             "OO....."])
+
+(def input2  ["......."
+              "...O.O."
+              "....O.."
+              "..O...."
+              "OO...OO"
+              "OO.O..."])
 
 (defn -main
   []
   (bomberMan 3 input))
+
+(defn some-ret
+  [pred coll]
+  (some #(when (pred %)
+           %) coll))
+
+(defn =sec
+  [s1 s2]
+  (apply = (map (u/use-i even?) (list s1 s2))))
+
+(defn get-cycle-size
+  [grid]
+  (transduce (comp (map #(bomberman % grid))
+                   (map-indexed vector))
+             (completing
+              (fn [prevs [i, :as tup]]
+                (if-let [[prev-i] (some-ret #(=sec tup %) prevs)]
+                  (reduced [prev-i i])
+                  (conj prevs tup))))
+             '()
+             (range 0 20)))
