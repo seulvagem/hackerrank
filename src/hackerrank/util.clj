@@ -53,3 +53,5 @@
   (reduce (fn [acc x]
             (update acc x (fnil inc 0)))
           {} coll))
+
+(def xf-println (map #(do (println %) %)))
